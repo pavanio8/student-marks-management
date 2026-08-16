@@ -1,106 +1,216 @@
-#include <stdio.h>
+
+        #include <stdio.h>
 #include <string.h>
-#define MAX 100
-struct Student
-{
+
+#define MAX_STUDENTS 100
+
+struct Student {
     int rollNo;
     char name[50];
-    char branch[20];
-
-    int marks1;
-    int marks2;
-    int marks3;
-
-    int total;
+    float marks1;
+    float marks2;
+    float marks3;
+    float total;
     float average;
-    char grade;
+    char result[10];
 };
 
-struct Student students[MAX];
+struct Student students[MAX_STUDENTS];
 int count = 0;
-void calculateGrade(struct Student *s)
+
+/* Calculate total, average and result */
+void calculateResult(struct Student *s)
 {
     s->total = s->marks1 + s->marks2 + s->marks3;
     s->average = s->total / 3.0;
 
-    if(s->average >= 90)
-        s->grade = 'A';
-    else if(s->average >= 80)
-        s->grade = 'B';
-    else if(s->average >= 70)
-        s->grade = 'C';
-    else if(s->average >= 60)
-        s->grade = 'D';
+    if (s->marks1 >= 35 && s->marks2 >= 35 && s->marks3 >= 35)
+        strcpy(s->result, "PASS");
     else
-        s->grade = 'F';
+        strcpy(s->result, "FAIL");
 }
+
+/* Add student */
 void addStudent()
 {
-    printf("\nEnter Roll Number : ");
-    scanf("%d",&students[count].rollNo);
+    struct Student s;
 
-    printf("Enter Name : ");
-    scanf(" %[^\n]",students[count].name);
+    if (count >= MAX_STUDENTS) {
+        printf("\nStudent limit reached!\n");
+        return;
+    }
 
-    printf("Enter Branch : ");
-    scanf("%s",students[count].branch);
+    printf("\nEnter Roll Number: ");
+    scanf("%d", &s.rollNo);
 
-    printf("Enter Marks in Subject 1 : ");
-    scanf("%d",&students[count].marks1);
+    printf("Enter Student Name: ");
+    scanf(" %[^\n]", s.name);
 
-    printf("Enter Marks in Subject 2 : ");
-    scanf("%d",&students[count].marks2);
+    printf("Enter Marks in Subject 1: ");
+    scanf("%f", &s.marks1);
 
-    printf("Enter Marks in Subject 3 : ");
-    scanf("%d",&students[count].marks3);
+    printf("Enter Marks in Subject 2: ");
+    scanf("%f", &s.marks2);
 
-    calculateGrade(&students[count]);
+    printf("Enter Marks in Subject 3: ");
+    scanf("%f", &s.marks3);
 
+    calculateResult(&s);
+
+    students[count] = s;
     count++;
 
-    printf("\nStudent Added Successfully.\n");
+    printf("\nStudent added successfully!\n");
 }
+
+/* Display all students */
 void displayStudents()
 {
     int i;
 
-    if(count==0)
-    {
-        printf("\nNo Records Found.\n");
+    if (count == 0) {
+        printf("\nNo students available!\n");
         return;
     }
 
-    printf("\n--------------------------------------------------------------------------------\n");
-    printf("Roll\tName\t\tBranch\tTotal\tAverage\tGrade\n");
-    printf("--------------------------------------------------------------------------------\n");
+    printf("\n================ STUDENT DETAILS ================\n");
 
-    for(i=0;i<count;i++)
-    {
-        printf("%d\t%-15s%-10s%d\t%.2f\t%c\n",
-               students[i].rollNo,
-               students[i].name,
-               students[i].branch,
-               students[i].total,
-               students[i].average,
-               students[i].grade);
+    for (i = 0; i < count; i++) {
+        printf("\nRoll Number : %d", students[i].rollNo);
+        printf("\nName        : %s", students[i].name);
+        printf("\nSubject 1   : %.2f", students[i].marks1);
+        printf("\nSubject 2   : %.2f", students[i].marks2);
+        printf("\nSubject 3   : %.2f", students[i].marks3);
+        printf("\nTotal       : %.2f", students[i].total);
+        printf("\nAverage     : %.2f", students[i].average);
+        printf("\nResult      : %s", students[i].result);
+        printf("\n-----------------------------------------------");
     }
+
+    printf("\n");
 }
+
+/* Search student */
+void searchStudent()
+{
+    int rollNo;
+    int i;
+    int found = 0;
+
+    printf("\nEnter Roll Number to search: ");
+    scanf("%d", &rollNo);
+
+    for (i = 0; i < count; i++) {
+        if (students[i].rollNo == rollNo) {
+            printf("\nStudent Found!\n");
+            printf("\nRoll Number : %d", students[i].rollNo);
+            printf("\nName        : %s", students[i].name);
+            printf("\nSubject 1   : %.2f", students[i].marks1);
+            printf("\nSubject 2   : %.2f", students[i].marks2);
+            printf("\nSubject 3   : %.2f", students[i].marks3);
+            printf("\nTotal       : %.2f", students[i].total);
+            printf("\nAverage     : %.2f", students[i].average);
+            printf("\nResult      : %s\n", students[i].result);
+
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found)
+        printf("\nStudent not found!\n");
+}
+
+/* Update student */
+void updateStudent()
+{
+    int rollNo;
+    int i;
+    int found = 0;
+
+    printf("\nEnter Roll Number to update: ");
+    scanf("%d", &rollNo);
+
+    for (i = 0; i < count; i++) {
+        if (students[i].rollNo == rollNo) {
+
+            printf("\nEnter New Name: ");
+            scanf(" %[^\n]", students[i].name);
+
+            printf("Enter New Marks in Subject 1: ");
+            scanf("%f", &students[i].marks1);
+
+            printf("Enter New Marks in Subject 2: ");
+            scanf("%f", &students[i].marks2);
+
+            printf("Enter New Marks in Subject 3: ");
+            scanf("%f", &students[i].marks3);
+
+            calculateResult(&students[i]);
+
+            printf("\nStudent updated successfully!\n");
+
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found)
+        printf("\nStudent not found!\n");
+}
+
+/* Delete student */
+void deleteStudent()
+{
+    int rollNo;
+    int i;
+    int j;
+    int found = 0;
+
+    printf("\nEnter Roll Number to delete: ");
+    scanf("%d", &rollNo);
+
+    for (i = 0; i < count; i++) {
+        if (students[i].rollNo == rollNo) {
+
+            for (j = i; j < count - 1; j++) {
+                students[j] = students[j + 1];
+            }
+
+            count--;
+
+            printf("\nStudent deleted successfully!\n");
+
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found)
+        printf("\nStudent not found!\n");
+}
+
+/* Main function */
 int main()
 {
     int choice;
 
-    while(1)
-    {
-        printf("\n===== STUDENT MARKS SYSTEM =====\n");
+    do {
+        printf("\n====================================\n");
+        printf("       STUDENT MARKS MANAGEMENT\n");
+        printf("====================================\n");
         printf("1. Add Student\n");
         printf("2. Display Students\n");
-        printf("3. Exit\n");
+        printf("3. Search Student\n");
+        printf("4. Update Student\n");
+        printf("5. Delete Student\n");
+        printf("6. Exit\n");
+        printf("====================================\n");
 
-        printf("Enter Choice : ");
-        scanf("%d",&choice);
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
 
-        switch(choice)
-        {
+        switch (choice) {
             case 1:
                 addStudent();
                 break;
@@ -110,11 +220,29 @@ int main()
                 break;
 
             case 3:
-                return 0;
+                searchStudent();
+                break;
+
+            case 4:
+                updateStudent();
+                break;
+
+            case 5:
+                deleteStudent();
+                break;
+
+            case 6:
+                printf("\nThank you for using Student Marks Management!\n");
+                break;
 
             default:
-                printf("Invalid Choice");
+                printf("\nInvalid choice! Please try again.\n");
         }
-    }
-}
 
+    } while (choice != 6);
+
+    return 0;
+}
+    
+        
+                
